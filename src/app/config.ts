@@ -124,6 +124,7 @@ const config = {
         w: width,
         h: height,
         fontSize : 16,
+        fps: fps,
         // 元素的添加频率
         appendEnemyFrequence: [2 * fps, 5 * fps],
         appendFriendFrequence : [2 * fps, 5 * fps],

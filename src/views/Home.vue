@@ -2,7 +2,6 @@
   <div class="home">
     <div><h1 class="head">{{data !== undefined?data.time:0}}</h1></div>
     <canvas ref="canvas"></canvas>
-    <button @click="loadResource"> 点我加载数据</button>
     <router-view/>
   </div>
 </template>
@@ -20,28 +19,30 @@ import resource from '@/app/util/resource';
 })
 export default class Home extends Vue {
   private msg: string;
-  private scene: Scene | undefined;
+  private scene: Scene;
   private ctx: any;
   private data: Data | undefined;
   constructor() {
     super();
     this.msg = 'hello';
-    this.scene = undefined;
+    this.scene = new Scene();
     this.data = new Data();
   }
   public mounted(): void {
-    this.initcanvas();
+    this.init();
+    this.loadResource();
   }
 
-  public loadResource() {
+  private loadResource() {
+    console.log('begin load')
     resource.loadAssets(() => {
       console.log('done');
+      const canvas = this.$refs.canvas;
+      this.scene.load(canvas);
     });
   }
 
-  public initcanvas(): void {
-    const canvas = this.$refs.canvas;
-    this.scene = new Scene(canvas);
+  private init(): void {
     this.data = this.scene.data;
   }
 }

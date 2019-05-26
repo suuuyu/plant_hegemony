@@ -32,7 +32,7 @@ export default class Item {
     public load(moduleKey: string, func: Function | undefined = undefined) {
         this.deadFunc = func;
         // 根据相应的modeleKey找到对应的模板
-        this.mod = config.module[moduleKey];
+        this.mod = Object.assign({}, config.module[moduleKey]);
         const mod = this.mod;
         Object.keys(mod).map(key => {
             //遍历模板
@@ -112,7 +112,7 @@ export default class Item {
      */
     private rotate() {
         const mod = <moduleData>this.mod;
-        this.deg+=this.rotateSpeed;
+        this.deg += this.rotateSpeed;
         this.scene.rotateDraw({
             deg: this.deg,
             x: <number> mod.x + <number> mod.w / 2,
@@ -155,10 +155,10 @@ export default class Item {
         const { w, h } = config.game;
         const mod = <moduleData>this.mod;
         return (
-            <number> mod.x > 0 &&
-            <number> mod.y > 0 &&
-            <number> mod.x < w &&
-            <number> mod.y < h
+            mod.x as number > 0 &&
+            mod.y  as number > 0 &&
+            mod.x as number < w &&
+            mod.y as number < h
         );
     }
 

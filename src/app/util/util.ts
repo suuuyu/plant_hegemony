@@ -25,6 +25,9 @@ const util = {
 
     TimeKeeper: (() => {
         let events: tkEvent;
+        /**
+         * 初始化注册器
+         */
         const init = () => {
             //初始化事件统计器
             events = {
@@ -32,13 +35,22 @@ const util = {
                 play: undefined,
             }
         };
+
+        /**
+         * 注册被定时器周期性调用的响应方法
+         */
         const register = (id: string, callback: Function) => {
-            if(events[id] instanceof Function) {
+            if(events[id] === undefined) {
                 events[id] = callback;
             } else {
                 console.error('注册失败，事件已注册')
             }
         };
+
+        /**
+         * 移除注册器
+         * @param id 
+         */
         const removeAt = (id: string) => {
             if(events[id] instanceof Function) {
                 events[id] = undefined;

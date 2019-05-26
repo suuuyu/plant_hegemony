@@ -14,12 +14,12 @@ export default new Router({
     {
       path: '/play',
       name: 'play',
-      component: () => import('./views/Play.vue'),
+      component: () => import('./components/Play.vue'),
     },
     {
       path: '/end',
       name: 'end',
-      component: () => import('./views/End.vue'),
+      component: () => import('./components/End.vue'),
     },
   ],
 });
