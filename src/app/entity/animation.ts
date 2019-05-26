@@ -15,6 +15,13 @@ interface animationInterface {
     frequence: number | number[];
 }
 
+interface animationInfo {
+    x: number;
+    y: number;
+    w: number;
+    h: number;
+}
+
  class Animation{
     private img: HTMLImageElement;
     private col: number;
@@ -42,7 +49,7 @@ interface animationInterface {
         this.scene = scene;
     }
 
-    play(info) {
+    play(info: animationInfo) {
         if (this.isEnd) return this;
         this.draw(info);
         this.frequence.update().active(() => {
@@ -64,7 +71,7 @@ interface animationInterface {
         }
     }
 
-    draw(info) {
+    draw(info: animationInfo) {
         var pos = this.getPos();
         var x = pos.x * this.w;
         var y = pos.y * this.h;
@@ -74,7 +81,7 @@ interface animationInterface {
         ]);
     }
 
-    end(callback: any) {
+    end(callback: Function) {
         if (this.index === this.len) {
             this.isEnd = true;
             callback();

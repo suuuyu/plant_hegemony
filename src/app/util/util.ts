@@ -14,7 +14,7 @@ const util = {
             }
         };
         keys.map(key => {
-            let obj = new Obj();
+            const obj = new Obj();
             obj.src = arr[key];
             obj[load] = () => {
                 //为对象设置响应函数，加载完毕自动响应

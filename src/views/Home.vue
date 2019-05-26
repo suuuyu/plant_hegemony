@@ -2,6 +2,7 @@
   <div class="home">
     <div><h1 class="head">{{data !== undefined?data.time:0}}</h1></div>
     <canvas ref="canvas"></canvas>
+    <button @click="loadResource"> 点我加载数据</button>
     <router-view/>
   </div>
 </template>
@@ -9,6 +10,7 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import {Scene, Data} from '@/app/scene/Scene';
+import resource from '@/app/util/resource';
 // import Hello from '@/components/Hello.vue'; // @ is an alias to /src
 
 @Component({
@@ -31,6 +33,12 @@ export default class Home extends Vue {
     this.initcanvas();
   }
 
+  public loadResource() {
+    resource.loadAssets(() => {
+      console.log('done');
+    });
+  }
+
   public initcanvas(): void {
     const canvas = this.$refs.canvas;
     this.scene = new Scene(canvas);
@@ -41,7 +49,10 @@ export default class Home extends Vue {
 
 <style scoped>
 .head {
-  
+  position: absolute;
+  top: 300px;
+  left: 300px;
+  z-index: 1000;
 }
 </style>
 

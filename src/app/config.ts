@@ -124,11 +124,11 @@ const config = {
         w: width,
         h: height,
         fontSize : 16,
-        // random frequence index 0 - index 1
-        appendEnemyCooldown: [2 * fps, 5 * fps],
-        appendFriendCooldown : [2 * fps, 5 * fps],
-        appendFuelCooldown : [2 * fps, 5 * fps],
-        appendStarCooldown : [1 * fps, 2 * fps],
+        // 元素的添加频率
+        appendEnemyFrequence: [2 * fps, 5 * fps],
+        appendFriendFrequence : [2 * fps, 5 * fps],
+        appendFuelFrequence : [2 * fps, 5 * fps],
+        appendStarFrequence : [1 * fps, 2 * fps],
     },
 
     module: modeles,
@@ -157,7 +157,7 @@ const config = {
 
 
     images: (() => {
-        const path = '../assets/img/';
+        const path = '/img/';
         let images = {
             boom: path + 'boom.png',
             player: path + 'plane/player.png',
@@ -176,7 +176,7 @@ const config = {
     })(),
 
     audios: (()=>{
-        const path = '../assets/sound/';
+        const path = '/sound/';
         return {
             bg : path + 'background.mp3',
             destroyed : path + 'destroyed.mp3',
@@ -242,4 +242,4 @@ function batchImport(name: string, count: number): string[] {
 };
 
 
-export default config;
+export { config, moduleData};
