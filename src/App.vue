@@ -14,6 +14,8 @@
 }
 .bg {
   background-image: url("./assets/img/background-1.jpg");
+  width: 1440px;
+  height: 700px;
 }
 #nav {
   padding: 30px;

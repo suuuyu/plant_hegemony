@@ -14,7 +14,7 @@ export default class Fuel extends Item {
 
     move() {
         const mod = this.mod as moduleData;
-        mod.y = <number> mod.y -  <number> mod.speed;
+        mod.y -= mod.speed;
     }
 
     update() {

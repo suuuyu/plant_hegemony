@@ -7,6 +7,13 @@ import {Scene} from '../scene/Scene';
 import util from '../util/util';
 import Frequence from '../frequence';
 
+/**
+ * @img： 图片资源
+ * @loop： 图片是否循环切换
+ * @row： 图片组的行数
+ * @col：图片组的列数
+ * @frequence： 图片切换的频率
+ */
 interface animationInterface {
     img: string | HTMLImageElement;
     loop: boolean;
@@ -15,6 +22,7 @@ interface animationInterface {
     frequence: number | number[];
 }
 
+/** 图片播放的位置 */
 interface animationInfo {
     x: number;
     y: number;
@@ -29,8 +37,8 @@ interface animationInfo {
     private loop: boolean;
     private w: number;
     private h: number;
-    private index: number;
-    private len: number;
+    private index: number; //记录当前动画是第几帧
+    private len: number; // 记录动画图片共多少帧
     private isEnd: boolean;
     private scene: Scene;
     private frequence: Frequence;
@@ -49,29 +57,33 @@ interface animationInfo {
         this.scene = scene;
     }
 
-    play(info: animationInfo) {
-        if (this.isEnd) return this;
+    /**播放动画， 动画播放完毕会调用回调函数 */
+    public play(info: animationInfo, callback: Function | undefined = undefined) {
+        if (this.isEnd) {
+            callback && callback();
+            return;
+        }
         this.draw(info);
         this.frequence.update().active(() => {
             this.index++;
         });
-        if (this.loop){
-            if (this.index === this.len){
+        if (this.index === this.len){
+            if (this.loop) {
                 this.index = 0;
+            } else {
+                this.isEnd = true
             }
-        } else{
-            return this;
         }
     }
 
-    getPos() {
+    private getPos() {
         return {
             x: this.index % this.row,
             y : Math.floor(this.index / this.row),
         }
     }
 
-    draw(info: animationInfo) {
+    private draw(info: animationInfo) {
         var pos = this.getPos();
         var x = pos.x * this.w;
         var y = pos.y * this.h;
@@ -79,13 +91,6 @@ interface animationInfo {
             this.img,
             x,y,this.w,this.h,info.x,info.y,info.w,info.h,
         ]);
-    }
-
-    end(callback: Function) {
-        if (this.index === this.len) {
-            this.isEnd = true;
-            callback();
-        }
     }
 }
 

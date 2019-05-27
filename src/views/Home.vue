@@ -1,7 +1,10 @@
 <template>
   <div class="home">
     <div><h1 class="head">{{data !== undefined?data.time:0}}</h1></div>
-    <canvas ref="canvas"></canvas>
+    <div class="canvas-wrapper">
+      <canvas ref="games"></canvas>
+      <canvas ref="screen" class="screen" @click="boardClick"></canvas>
+    </div>
     <router-view/>
   </div>
 </template>
@@ -10,6 +13,8 @@
 import { Component, Vue } from 'vue-property-decorator';
 import {Scene, Data} from '@/app/scene/Scene';
 import resource from '@/app/util/resource';
+import explosion from '@/app/scene/explosion'
+import User from '@/app/user'
 // import Hello from '@/components/Hello.vue'; // @ is an alias to /src
 
 @Component({
@@ -20,6 +25,7 @@ import resource from '@/app/util/resource';
 export default class Home extends Vue {
   private msg: string;
   private scene: Scene;
+  private user: User | undefined;
   private ctx: any;
   private data: Data | undefined;
   constructor() {
@@ -28,22 +34,37 @@ export default class Home extends Vue {
     this.scene = new Scene();
     this.data = new Data();
   }
+
   public mounted(): void {
     this.init();
     this.loadResource();
+    this.initScreen();
+    this.addUser();
   }
 
-  private loadResource() {
-    console.log('begin load')
-    resource.loadAssets(() => {
-      console.log('done');
-      const canvas = this.$refs.canvas;
-      this.scene.load(canvas);
-    });
+  public addUser() {
+    this.user = new User(this.scene);
+    this.user.register();
+  }
+
+  public boardClick(e: MouseEvent) {
+    this.user && this.user.shoot(e.offsetX, e.offsetY);
   }
 
   private init(): void {
     this.data = this.scene.data;
+  }
+  private loadResource() {
+    console.log('begin load')
+    resource.loadAssets(() => {
+      console.log('done');
+      const canvas = this.$refs.games;
+      this.scene.load(canvas);
+    });
+  }
+  private initScreen() {
+    const canvas = this.$refs.screen;
+    explosion.init(canvas);
   }
 }
 </script>
@@ -51,9 +72,21 @@ export default class Home extends Vue {
 <style scoped>
 .head {
   position: absolute;
-  top: 300px;
-  left: 300px;
+  left: 30px;
   z-index: 1000;
+  color: aliceblue;
+}
+.screen {
+  top: 0px;
+  left: 0px;
+  position: absolute;
+  z-index: 10000;
+}
+.canvas-wrapper {
+  position: relative;
+  width: 1440px;
+  height: 700px;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.315)
 }
 </style>
 

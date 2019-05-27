@@ -38,6 +38,7 @@ export default class Item {
             //遍历模板
             if(key === 'img' && mod.img !== undefined) {
                 if( mod.img instanceof Array) {
+                    //如果有一组图片则随机取一张
                     this.img = resource.findImgByKey(util.randomArrayItem(mod.img));
                 } else {
                     this.img = resource.findImgByKey(mod.img);
@@ -151,7 +152,7 @@ export default class Item {
         }
     }
 
-    private isEnter() {
+    protected isEnter() {
         const { w, h } = config.game;
         const mod = <moduleData>this.mod;
         return (
@@ -162,7 +163,7 @@ export default class Item {
         );
     }
 
-    private isOut() {
+    protected isOut() {
         const { w, h } = config.game;
         const mod = <moduleData>this.mod;
         return (

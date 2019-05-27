@@ -1,3 +1,5 @@
+import { moduleData } from '../config';
+
 const util = {
     loadResource(arr: any, Obj: any, callback: Function ) {
         const keys = Object.keys(arr);
@@ -92,6 +94,12 @@ const util = {
     loadAudios(audios: any, callback: Function) {
         this.loadResource(audios, Audio, callback);
     },
+
+    isCollision(a: moduleData, b: moduleData) {
+        return ((a.y > b.y && a.y < b.y + b.h) || (b.y > a.y && b.y < a.y + a.h)) && 
+        ((a.x > b.x && a.x < b.x + b.w) || (b.x > a.x && b.x < a.x + a.w))
+    }
+
 }
 
 interface tkEvent {

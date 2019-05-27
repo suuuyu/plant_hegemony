@@ -11,12 +11,12 @@ const height = 700;
  * 定义飞机，行星，陨石等模板类
  */
 interface moduleData {
-    w?: number;
-    h?: number;
-    x?: number;
-    y?: number;
-    img?: string | string[];
-    speed?: number;
+    w: number;
+    h: number;
+    x: number;
+    y: number;
+    img: string | string[];
+    speed: number;
     bulletFrequence?: number;
     animation?: animationInterface;
     life?:number;
@@ -40,16 +40,20 @@ const enemy: moduleData = (() => {
     o.x = width + o.w;
     o.speed = -3;
     o.img = 'enemy';
-    return o;
+    return  Object.assign(o, {
+        life: 3
+    })
 })();
 
 const friend: moduleData = (() => {
     //友军设置
     let o = plane();
-    o.x = width + o.w;
-    o.speed = -3;
-    o.img = 'friend';
-    return o;
+    o.x = 0;
+    o.speed = 3;
+    // o.img = 'friend';
+    return  Object.assign(o, {
+        life: 2
+    })
 })();
 
 const meteorite: moduleData = (() => {
@@ -57,12 +61,12 @@ const meteorite: moduleData = (() => {
     let o = plane();
     o.w = 85;
     o.h = 85;
-    o.speed = -3;
+    o.speed = 3;
     return Object.assign(
         o,
         {
             img: batchImport('meteorites_', 4),
-            life: 2
+            life: 5
         }
     )
 })();
@@ -94,6 +98,11 @@ const enemyBullet: moduleData = (() => {
 
 const planet: moduleData = {
     //行星
+    x: 0,
+    y: 0,
+    w: 0,
+    h: 0,
+    speed: 0,
     img: batchImport('star_', 12)
 };
 
@@ -129,7 +138,8 @@ const config = {
         appendEnemyFrequence: [2 * fps, 5 * fps],
         appendFriendFrequence : [2 * fps, 5 * fps],
         appendFuelFrequence : [2 * fps, 5 * fps],
-        appendStarFrequence : [1 * fps, 2 * fps],
+        appendPlanetFrequence : [1 * fps, 2 * fps],
+        fireFrequence: 0.1 * fps
     },
 
     module: modeles,

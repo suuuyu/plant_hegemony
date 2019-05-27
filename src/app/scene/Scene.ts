@@ -3,6 +3,10 @@ import Frequence from '../frequence';
 import util from '../util/util';
 import Fuel from '../entity/fuel'
 import Item from '../entity/item';
+import Planet from '../entity/planet';
+import Meteorite from '../entity/meteorite';
+import Bullet from '../entity/bullet';
+import Plane from '../entity/plane';
 interface drawData {
     img: string
 }
@@ -20,7 +24,7 @@ class Data {
 
 interface element {
     arr: Item[],
-    type: typeof Fuel,
+    type: typeof Item,
     appendFrequence: Frequence,
 }
 
@@ -30,11 +34,33 @@ interface element {
     public data: Data;
     private register_id: string;
     private timeCounter: Frequence = new Frequence(config.game.fps, false)
+    public friendBullets: Bullet[] = [];
+    public enermyBullets: Bullet[] = [];
     private fuels: element = {
         arr: [],
         type: Fuel,
         appendFrequence: new Frequence(config.game.appendFuelFrequence)
     };
+    private planet: element = {
+        arr: [],
+        type: Planet,
+        appendFrequence: new Frequence(config.game.appendPlanetFrequence)
+    }
+    public meteorite: element = {
+        arr: [],
+        type: Meteorite,
+        appendFrequence: new Frequence(config.game.appendPlanetFrequence)
+    }
+    public friend: element = {
+        arr: [],
+        type: Plane,
+        appendFrequence: new Frequence(config.game.appendFriendFrequence)
+    }
+    public enermy: element = {
+        arr: [],
+        type: Plane,
+        appendFrequence: new Frequence(config.game.appendEnemyFrequence)
+    }
 
 
     constructor() {
@@ -85,6 +111,10 @@ interface element {
 
     private updateElement() {
         this.updateFuels();
+        this.updatePlanet();
+        this.updateMeteorite();
+        this.updatePlane();
+        this.updateBullet();
     }
 
     /**
@@ -92,6 +122,20 @@ interface element {
      */
     private updateFuels() {
         this.updateArr(this.fuels.arr);
+    }
+    private updatePlanet() {
+        this.updateArr(this.planet.arr);
+    }
+    private updateMeteorite() {
+        this.updateArr(this.meteorite.arr);
+    }
+    private updatePlane() {
+        this.updateArr(this.friend.arr);
+        this.updateArr(this.enermy.arr);
+    }
+    private updateBullet() {
+        this.updateArr(this.enermyBullets);
+        this.updateArr(this.friendBullets);
     }
 
     /**
@@ -111,13 +155,6 @@ interface element {
         }
     }
 
-    public get(obj: typeof Fuel): Fuel {
-        let o = new obj(this);
-        o.load();
-        console.log(o);
-        return o;
-    }
-
     private initCanvas(): void {
         this.ctx = this.canvas.getContext('2d');
         this.canvas.width = config.game.w;
@@ -125,13 +162,46 @@ interface element {
     }
 
     private appendElement() {
-        this.append(this.fuels);
+        this.append(this.fuels, this.get.bind(this));
+        this.append(this.planet, this.get.bind(this));
+        this.append(this.meteorite, this.get.bind(this));
+        this.append(this.enermy, (e: any, isFriend: boolean = false) => {
+            return this.getPlane(e, isFriend);
+        });
+        this.append(this.friend, (e: any, isFriend: boolean = true) => {
+            return this.getPlane(e, isFriend);
+        });
     }
 
-    private append(e: element) {
+    private getPlane(obj: any, isFriend: boolean) {
+        let o = new obj(this);
+        if(isFriend) {
+            //新建友军
+            o.init(isFriend, this.friendBullets);
+            o.load('friend');
+        } else {
+            //新建敌军
+            o.init(isFriend, this.enermyBullets);
+            o.load('enemy');
+        }
+        return o;
+    }
+
+    public get(obj: any): Item {
+        let o = new obj(this);
+        o.load();
+        return o;
+    }
+
+    /**
+     * 
+     * @param e 新建元素的元素组
+     * @param fn 初始化元素的方法
+     */
+    private append(e: element, fn: Function) {
         e.appendFrequence.update().active(() => {
             e.arr.push(
-                this.get(e.type)
+                fn(e.type)
             )
         });
     }
