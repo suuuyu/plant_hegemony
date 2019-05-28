@@ -1,7 +1,8 @@
 <template>
   <div class="home">
     <div><h1 class="head">{{data !== undefined?data.time:0}}</h1></div>
-    <div class="canvas-wrapper" @mousemove="mouseMove" @mousedown="listen=true" @mouseup="listen=false" ref="panel">
+    <!-- <div class="canvas-wrapper" @mousemove="mouseMove" @mousedown="listen=true" @mouseup="listen=false" ref="panel"> -->
+    <div class="canvas-wrapper" ref="panel">
       <canvas ref="games"></canvas>
       <canvas ref="screen" class="screen" @click="boardClick"></canvas>
     </div>
@@ -73,8 +74,8 @@ export default class Home extends Vue {
     resource.loadAssets(() => {
       console.log('done');
       const canvas = this.$refs.games;
-      this.scene.load(canvas);
-      this.scene.controller.addPlayer();
+      this.scene.load(canvas as HTMLCanvasElement);
+      this.scene.controller.addPlayer(this.$refs.panel as HTMLElement);
     });
   }
   private initScreen() {

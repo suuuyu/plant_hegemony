@@ -63,21 +63,26 @@ export default class Controller {
         this.data = new Data();
     }
 
-    public addPlayer() {
+    /**
+     * 添加玩家，并为玩家绑定操作dom
+     * @param dom 
+     */
+    public addPlayer(dom: HTMLElement) {
         if (this.player === undefined) {
             this.player = new Playerplane(this.scene);
             this.player.init(true, this.friendBullets);
+            this.player.bindMoveEvent(dom);
             console.error(this.player);
         } else {
             console.error('用户已存在');
         }
     }
 
-    public movePlayer(x: number, y: number) {
-        // explosion.clickThis(x, y);
-        const player = this.player as Playerplane;
-        player.controlMove(x, y);
-    }
+    // public movePlayer(x: number, y: number) {
+    //     // explosion.clickThis(x, y);
+    //     const player = this.player as Playerplane;
+    //     player.controlMove(x, y);
+    // }
 
     public sendElement() {
         this.send(this.fuels, this.get.bind(this));

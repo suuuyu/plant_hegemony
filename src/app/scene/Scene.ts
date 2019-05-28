@@ -16,7 +16,7 @@ class Data {
 }
 
  class Scene {
-    private canvas: any;
+    public canvas: HTMLCanvasElement | undefined;
     private ctx: any;
     private register_id: string;
     private timeCounter: Frequence = new Frequence(config.game.fps, false)
@@ -29,7 +29,7 @@ class Data {
         this.controller = new Controller(this);
     }
 
-    public load(canvas: any): void {
+    public load(canvas: HTMLCanvasElement): void {
         this.canvas = canvas;
         this.register_id = 'play';
         this.initCanvas();
@@ -84,9 +84,10 @@ class Data {
     }
 
     private initCanvas(): void {
-        this.ctx = this.canvas.getContext('2d');
-        this.canvas.width = config.game.w;
-        this.canvas.height = config.game.h;
+        const canvas = this.canvas as HTMLCanvasElement;
+        this.ctx = canvas.getContext('2d');
+        canvas.width = config.game.w;
+        canvas.height = config.game.h;
     }
 
 }
