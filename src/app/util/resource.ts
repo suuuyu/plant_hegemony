@@ -19,7 +19,7 @@ const resource = (() => {
         util.loadImages(config.images, (imgs: any) => {
             images = imgs;
             call(callback);
-        })
+        });
         util.loadAudios(config.audios, (aud: any) => {
             audios = aud;
             call(callback);
@@ -28,8 +28,8 @@ const resource = (() => {
 
     return {
         findImgByKey,
-        loadAssets
-    }
+        loadAssets,
+    };
 })();
 
 export default resource;

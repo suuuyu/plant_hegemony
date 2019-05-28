@@ -38,23 +38,18 @@ export default class User {
       this.shootModule.x = x;
       this.shootModule.y = y;
       this.shootItem(this.scene.enermy.arr, (e: Item) => {
-        console.log(e);
         explosion.clickThis(x, y);
       });
       this.shootItem(this.scene.friend.arr, (e: Item) => {
-        console.log(e);
         explosion.clickThis(x, y);
       });
       this.shootItem(this.scene.meteorite.arr, (e: Item) => {
-        console.log(e);
         explosion.clickThis(x, y);
       });
       this.shootItem(this.scene.enermyBullets, (e: Item) => {
-        console.log(e);
         explosion.clickThis(x, y);
       });
       this.shootItem(this.scene.friendBullets, (e: Item) => {
-        console.log(e);
         explosion.clickThis(x, y);
       });
     }

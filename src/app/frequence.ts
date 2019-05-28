@@ -11,16 +11,8 @@ export default class Frequence {
     private frequence: number;
     private origin: number | number[];
     constructor( frequence: number | number[], now: boolean = true) {
-        this.frequence = now? 0 : this.getFrequence(frequence);
+        this.frequence = now ? 0 : this.getFrequence(frequence);
         this.origin = frequence;
-    }
-
-    private getFrequence(frequence: number | number[] ): number {
-        if( frequence instanceof Array) {
-            return util.random(frequence[1], frequence[0]);
-        } else {
-            return frequence;
-        }
     }
 
     public update(): Frequence {
@@ -28,8 +20,8 @@ export default class Frequence {
         return this;
     }
 
-    public active(callback: Function) {
-        if(this.frequence <= 0) {
+    public active(callback: () => void) {
+        if (this.frequence <= 0) {
             this.reset();
             callback();
         }
@@ -38,4 +30,13 @@ export default class Frequence {
     public reset() {
         this.frequence = this.getFrequence(this.origin);
     }
+
+    private getFrequence(frequence: number | number[] ): number {
+        if (frequence instanceof Array) {
+            return util.random(frequence[1], frequence[0]);
+        } else {
+            return frequence;
+        }
+    }
 }
+

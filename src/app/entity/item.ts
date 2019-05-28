@@ -11,7 +11,7 @@ export default class Item {
     protected run: boolean = true;
     public hasDead: boolean = false;
     public deadFunc: Function | undefined = undefined; //死亡动画
-    protected life: number = 1;
+    public life: number = 1;
     protected rotateState: boolean = false; // 是否旋转
     protected rotateSpeed: number = 2; // 旋转速度
     private deg: number = 0; //旋转角度报错

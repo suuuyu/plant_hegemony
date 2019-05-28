@@ -1,7 +1,7 @@
 <template>
   <div class="home">
     <div><h1 class="head">{{data !== undefined?data.time:0}}</h1></div>
-    <div class="canvas-wrapper">
+    <div class="canvas-wrapper" @mousemove="mouseMove" @mousedown="listen=true" @mouseup="listen=false" ref="panel">
       <canvas ref="games"></canvas>
       <canvas ref="screen" class="screen" @click="boardClick"></canvas>
     </div>
@@ -13,8 +13,8 @@
 import { Component, Vue } from 'vue-property-decorator';
 import {Scene, Data} from '@/app/scene/Scene';
 import resource from '@/app/util/resource';
-import explosion from '@/app/scene/explosion'
-import User from '@/app/user'
+import explosion from '@/app/scene/explosion';
+import User from '@/app/user';
 // import Hello from '@/components/Hello.vue'; // @ is an alias to /src
 
 @Component({
@@ -23,11 +23,13 @@ import User from '@/app/user'
   },
 })
 export default class Home extends Vue {
+  private listen: boolean = false;
   private msg: string;
   private scene: Scene;
   private user: User | undefined;
   private ctx: any;
   private data: Data | undefined;
+  private isBegin: boolean = false;
   constructor() {
     super();
     this.msg = 'hello';
@@ -36,23 +38,35 @@ export default class Home extends Vue {
   }
 
   public mounted(): void {
+    this.isBegin = true;
     this.init();
     this.loadResource();
     this.initScreen();
-    this.addUser();
+    // this.addUser();
   }
 
-  public addUser() {
-    this.user = new User(this.scene);
-    this.user.register();
-  }
+  // public addUser() {
+  //   this.user = new User(this.scene);
+  //   this.user.register();
+  // }
 
   public boardClick(e: MouseEvent) {
     this.user && this.user.shoot(e.offsetX, e.offsetY);
   }
 
+  public mouseMove(e: MouseEvent) {
+    if (this.listen&& this.isBegin) {
+      this.scene.controller.movePlayer(e.offsetX, e.offsetY)
+    }
+  }
+
+  // private initTouch() {
+  //   const panel = this.$refs.panel as HTMLDivElement;
+
+  // }
+
   private init(): void {
-    this.data = this.scene.data;
+    this.data = this.scene.controller.data;
   }
   private loadResource() {
     console.log('begin load')
@@ -60,6 +74,7 @@ export default class Home extends Vue {
       console.log('done');
       const canvas = this.$refs.games;
       this.scene.load(canvas);
+      this.scene.controller.addPlayer();
     });
   }
   private initScreen() {

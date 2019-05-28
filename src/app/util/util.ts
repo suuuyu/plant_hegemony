@@ -11,7 +11,7 @@ const util = {
             result[key] = obj;
             count++;
             if(count === len) {
-                //当所有同类资源加载完毕后调用回调函数
+                // 当所有同类资源加载完毕后调用回调函数
                 callback(result);
             }
         };
@@ -19,19 +19,19 @@ const util = {
             const obj = new Obj();
             obj.src = arr[key];
             obj[load] = () => {
-                //为对象设置响应函数，加载完毕自动响应
+                // 为对象设置响应函数，加载完毕自动响应
                 recall(obj, key);
             }
         });
     },
 
     TimeKeeper: (() => {
-        let events: tkEvent;
+        let events: TkEvent;
         /**
          * 初始化注册器
          */
         const init = () => {
-            //初始化事件统计器
+            // 初始化事件统计器
             events = {
                 hotkey: undefined,
                 play: undefined,
@@ -41,11 +41,11 @@ const util = {
         /**
          * 注册被定时器周期性调用的响应方法
          */
-        const register = (id: string, callback: Function) => {
+        const register = (id: string, callback: () => void) => {
             if(events[id] === undefined) {
                 events[id] = callback;
             } else {
-                console.error('注册失败，事件已注册')
+                console.error('注册失败，事件已注册');
             }
         };
 
@@ -54,28 +54,28 @@ const util = {
          * @param id 
          */
         const removeAt = (id: string) => {
-            if(events[id] instanceof Function) {
+            if (events[id] instanceof Function) {
                 events[id] = undefined;
             }
         }
         const begin = () => {
-            for(let func of Object.values(events)) {
+            for (let func of Object.values(events)) {
                 if(func !== undefined) {
                     func();
                 }
             }
             requestAnimationFrame(begin);
-        }
+        };
         init();
         begin();
         return {
             init,
             register,
             removeAt
-        }
+        };
     })(),
 
-    isImage(img: HTMLImageElement | String): boolean {
+    isImage(img: HTMLImageElement | string): boolean {
         return img instanceof Image;
     },
 
@@ -97,13 +97,13 @@ const util = {
 
     isCollision(a: moduleData, b: moduleData) {
         return ((a.y > b.y && a.y < b.y + b.h) || (b.y > a.y && b.y < a.y + a.h)) && 
-        ((a.x > b.x && a.x < b.x + b.w) || (b.x > a.x && b.x < a.x + a.w))
+        ((a.x > b.x && a.x < b.x + b.w) || (b.x > a.x && b.x < a.x + a.w));
     }
 
-}
+};
 
-interface tkEvent {
-    [key: string]: Function | undefined
+interface TkEvent {
+    [key: string]: Function | undefined;
 }
 
 export default util;

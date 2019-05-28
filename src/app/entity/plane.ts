@@ -18,7 +18,7 @@ export default class Plane extends Item {
     /**
      * 射击频率
      */
-    private bulletFrequence: Frequence | undefined;
+    protected bulletFrequence: Frequence | undefined;
 
     /** 同阵营的子弹数组 */
     private ourBullets: Bullet[] = [];
@@ -26,6 +26,8 @@ export default class Plane extends Item {
     public canFire: boolean = true;
 
     private isFriend: boolean = true;
+
+    public speedY: number = 0;
 
     /**
      * 
@@ -38,8 +40,9 @@ export default class Plane extends Item {
         this.deathAnimation = new Animation(config.planeDeathAnimation(), scene);
     }
 
-    public init(isFriend: boolean,bulletArray: Bullet[]) {
+    public init(isFriend: boolean, bulletArray: Bullet[]) {
         this.isFriend = isFriend;
+        this.speedY = isFriend ? 2: 0;
         this.ourBullets = bulletArray;
     }
     /**
@@ -50,7 +53,7 @@ export default class Plane extends Item {
         const { w, h } = config.game;
         super.load(moduleKey, this.deathing.bind(this));
         const mod = this.mod as moduleData;
-        mod.y = util.random(0, h - mod.h);
+        mod.y = this.isFriend ? h / 2 : util.random(0, h - mod.h);
         this.bulletFrequence = new Frequence(mod.bulletFrequence as number);
     }
 
@@ -60,7 +63,7 @@ export default class Plane extends Item {
             this.canFire = true;
         })
         if (this.run) {
-            this.move();  
+            this.move();
             if (this.isEnter()) {
                 this.fire();
             }
@@ -69,21 +72,33 @@ export default class Plane extends Item {
     }
 
     public fire() {
-        if(!this.canFire) return;
+        if (!this.canFire) return;
         this.canFire = false;
         const bullet = new Bullet(this.scene);
         const mod = this.mod as moduleData;
-        bullet.load(this.isFriend? 'playerBullet' : 'enemyBullet');
-        bullet.setPositon(mod.x, mod.y + mod.h/2);
+        bullet.load(this.isFriend ? 'playerBullet' : 'enemyBullet');
+        bullet.setPositon(mod.x, mod.y + mod.h / 2);
         this.ourBullets.push(bullet);
     }
 
     private move() {
         const mod = this.mod as moduleData;
+        if (this.isFriend) {
+            if (mod.x >= config.game.w / 10) {
+                mod.speed = 0;
+            }
+            if (mod.y > config.game.h * 4 / 5) {
+                this.speedY = - this.speedY
+            }
+            if (mod.y < config.game.h / 5) {
+                this.speedY = - this.speedY
+            }
+        }
         mod.x += mod.speed;
+        mod.y += this.speedY;
     }
 
-    private deathing() {
+    protected deathing() {
         const mod = this.mod as moduleData;
         this.deathAnimation.play({
             x: mod.x,
@@ -92,6 +107,6 @@ export default class Plane extends Item {
             h : mod.h,
         }, () => {
             this.hasDead = true;
-        })
+        });
     }
 }

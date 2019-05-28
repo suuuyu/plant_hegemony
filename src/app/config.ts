@@ -29,6 +29,7 @@ interface Imodules {
 const player: moduleData = (() => {
     //玩家设置
     let o = plane();
+    o.speed = 10;
     o.y = height / 2 - o.y / 2;
     o.bulletFrequence = 0.5 * fps;
     return o;
@@ -41,7 +42,7 @@ const enemy: moduleData = (() => {
     o.speed = -3;
     o.img = 'enemy';
     return  Object.assign(o, {
-        life: 3
+        life: 2
     })
 })();
 
@@ -52,7 +53,7 @@ const friend: moduleData = (() => {
     o.speed = 3;
     // o.img = 'friend';
     return  Object.assign(o, {
-        life: 2
+        life: 5
     })
 })();
 
@@ -66,7 +67,7 @@ const meteorite: moduleData = (() => {
         o,
         {
             img: batchImport('meteorites_', 4),
-            life: 5
+            life: 3
         }
     )
 })();
@@ -107,7 +108,7 @@ const planet: moduleData = {
 };
 
 const modeles: Imodules = {
-    'play': player,
+    'player': player,
     'enemy': enemy,
     'friend': friend,
     'meteorite': meteorite,
@@ -136,7 +137,8 @@ const config = {
         fps: fps,
         // 元素的添加频率
         appendEnemyFrequence: [2 * fps, 5 * fps],
-        appendFriendFrequence : [2 * fps, 5 * fps],
+        // appendFriendFrequence : [2 * fps, 5 * fps],
+        appendFriendFrequence : 60000,
         appendFuelFrequence : [2 * fps, 5 * fps],
         appendPlanetFrequence : [1 * fps, 2 * fps],
         fireFrequence: 0.1 * fps
@@ -177,6 +179,7 @@ const config = {
             playerBullet: path + 'playerBullet.png',
             enemyBullet: path + 'enemyBullet.png',
             fuel: path + 'fuel2.png',
+            background: path + 'background-1.jpg'
         };
         return Object.assign(
             batchAdd(path+'/star/', 'star_', 12, 'png'),
