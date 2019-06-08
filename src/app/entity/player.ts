@@ -3,11 +3,12 @@ import { Scene } from '../scene/Scene';
 import Bullet from './bullet';
 import Frequence from '../frequence';
 import { moduleData, config } from '../config';
+import { hotkey, TkEvent } from '../util/util';
 
 export default class Playerplane extends Plane {
 
-    private controlSpeed: number = 0;
     private moveFrequence: Frequence = new Frequence(1, true);
+    private controllSpeed: number = 0;
     private canMove: boolean = true;
     constructor(scene: Scene) {
         super(scene);
@@ -16,10 +17,10 @@ export default class Playerplane extends Plane {
     public init(isFriend: boolean = true, bulletArray: Bullet[]) {
         super.init(true, bulletArray);
         super.load('player');
-        this.speedY = 0;
         const mod = this.mod as moduleData;
+        this.controllSpeed = mod.speed;
         mod.y = config.game.h / 2;
-        this.controlSpeed = mod.speed;
+        this.speedY = 0;
     }
 
     public update() {
@@ -32,8 +33,19 @@ export default class Playerplane extends Plane {
         })
         if (this.run) {
             this.fire();
+        } else {
+            const scene = this.scene as Scene;
+            const hook = scene.hook as Function;
+            hook();
         }
         super.update();
+    }
+
+    /**生命增加 */
+    public moreLife(num: number) {
+        this.life += num;
+        this.life = this.life > config.data().maxLife ? config.data().maxLife : this.life
+        /** */
     }
 
     public bindMoveEvent(dom: HTMLElement) {
@@ -66,18 +78,62 @@ export default class Playerplane extends Plane {
             };
             dom.addEventListener('touchmove', func);
         });
+        this.addControllEvent();
     }
 
-    // public controlMove(x: number, y: number) {
-    //     if (this.canMove) {
-    //         this.canMove = false;
-    //         const mod = this.mod as moduleData;
-    //         const offsetX = x - mod.x - mod.w / 2;
-    //         const offsetY = y - mod.y - mod.h / 2;
-    //         if (Math.abs(offsetX) < 10 && Math.abs(offsetY) < 10) return;
-    //         const z = Math.sqrt( offsetX * offsetX + offsetY *offsetY);
-    //         mod.x += this.controlSpeed * offsetX / z;
-    //         mod.y += this.controlSpeed * offsetY / z;
-    //     }
-    // }
+    private skill1() {
+        console.log('     ')
+        const mod = this.mod as moduleData;
+        const life = this.life / 2;
+        this.life = life;
+        for(let i=0; i<3; i++) {
+            this.scene.controller.addFriend(mod.x, life / 2);
+        }
+    }
+
+
+    up() {
+        const mod = this.mod as moduleData;
+        if (mod.y <= 0) return;
+        console.log(mod.speed)
+        mod.y -= this.controllSpeed;
+    }
+    left() {
+        const mod = this.mod as moduleData;
+        if (mod.x <= 0) return;
+        mod.x-=this.controllSpeed;
+    }
+    right() {
+        const mod = this.mod as moduleData;
+        if (mod.x+mod.w >= config.game.w) return;
+        mod.x += this.controllSpeed;
+    }
+    down() {
+        const mod = this.mod as moduleData;
+        if (mod.y+mod.h >= config.game.h) return;
+        mod.y += this.controllSpeed;
+    }
+
+    public addControllEvent() {
+        const keys: TkEvent = {
+            'w': this.up.bind(this),
+            'a': this.left.bind(this),
+            's': this.down.bind(this),
+            'd': this.right.bind(this),
+        };
+        Object.keys(keys).map((key) => {
+            hotkey.register(key, () => {
+               const func = keys[key] as Function;
+               func();
+            }); 
+        });
+        
+        hotkey.register(' ', () => {
+            if (this.life > config.data().maxLife / 2) {
+                console.log(this.life + ' ' + config.data().maxLife / 2);
+                this.skill1();
+            }
+        }, true);
+    }
+    
 }

@@ -1,6 +1,6 @@
 import { config, moduleData } from '../config';
 import Item from './item';
-import util from '../util/util';
+import {util} from '../util/util';
 
 export default class Fuel extends Item {
     load() {

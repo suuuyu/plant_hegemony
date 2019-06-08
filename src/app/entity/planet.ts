@@ -1,5 +1,5 @@
 import Item from './item';
-import util from '../util/util';
+import {util} from '../util/util';
 import { moduleData, config } from '../config';
 
 export default class Planet extends Item {

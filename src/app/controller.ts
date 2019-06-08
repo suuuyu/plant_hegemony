@@ -1,5 +1,5 @@
 import Frequence from './frequence';
-import { config } from './config';
+import { config, moduleData } from './config';
 import Bullet from './entity/bullet';
 import Fuel from './entity/fuel';
 import Planet from './entity/planet';
@@ -9,15 +9,33 @@ import Item from './entity/item';
 import { Scene } from './scene/Scene';
 import Playerplane from './entity/player';
 import explosion from '@/app/scene/explosion';
+import {util} from './util/util';
 
 class Data {
     public time: number;
     public fuel: number;
     public score: number;
+    public level: number = 0;
     constructor() {
         this.time = 0;
         this.fuel = 0;
         this.score = 0;
+    }
+    public arr: boolean[] = [
+        false,
+        false,
+        false,
+    ];
+
+    public updateScore(num: number) {
+        this.score += num;
+        if (this.score > 10000) {this.level = 3;}
+        else if (this.score > 5000) {this.level = 2;}
+        else if (this.score > 2000) {this.level = 1;}
+    }
+
+    public updateFuel(num: number) {
+        this.fuel += num;
     }
 }
 
@@ -28,7 +46,7 @@ interface Element {
 }
 
 export default class Controller {
-    private player: Playerplane | undefined;
+    public player: Playerplane | undefined;
     public data: Data;
     public friendBullets: Bullet[] = [];
     public enermyBullets: Bullet[] = [];
@@ -61,6 +79,7 @@ export default class Controller {
     constructor(scene: Scene){
         this.scene = scene;
         this.data = new Data();
+        this.data.fuel = config.data().fuel;
     }
 
     /**
@@ -72,17 +91,19 @@ export default class Controller {
             this.player = new Playerplane(this.scene);
             this.player.init(true, this.friendBullets);
             this.player.bindMoveEvent(dom);
-            console.error(this.player);
         } else {
             console.error('用户已存在');
         }
     }
 
-    // public movePlayer(x: number, y: number) {
-    //     // explosion.clickThis(x, y);
-    //     const player = this.player as Playerplane;
-    //     player.controlMove(x, y);
-    // }
+    public addFriend(x: number, life: number) {
+        let friend = new Plane(this.scene);
+        friend.init(true, this.friendBullets);
+        friend.load('friend');
+        friend.setAttribute(x, util.random(config.game.h * 4 / 5,config.game.h / 5), life);
+        this.friend.arr.push(friend);
+    }
+
 
     public sendElement() {
         this.send(this.fuels, this.get.bind(this));
@@ -91,6 +112,14 @@ export default class Controller {
         this.send(this.enermy, (e: any, isFriend: boolean = false) => {
             return this.getPlane(e, isFriend);
         });
+        if (this.data.level >= 2 ) {
+            this.send(this.enermy, (e: any, isFriend: boolean = false) => {
+                return this.getPlane(e, isFriend);
+            });
+        }
+        if (this.data.level >= 3 ) {
+            this.send(this.meteorite, this.get.bind(this));
+        }
         // this.send(this.friend, (e: any, isFriend: boolean = true) => {
         //     return this.getPlane(e, isFriend);
         // });
@@ -137,27 +166,109 @@ export default class Controller {
         this.updatePlane();
         this.updateBullet();
         this.player && this.player.update();
+
     }
 
-    /**
-     * 更新油桶显示，油桶碰撞检测
-     */
+    /**只能碰撞玩家，碰撞后玩家加血 */
     private updateFuels() {
-        this.updateArr(this.fuels.arr);
+        const fuels = this.fuels;
+        if (this.player) {
+            const player = this.player
+            const mod = player.mod as moduleData;
+            fuels.arr.forEach((fuel, index) => {
+                if (util.isCollision(mod, fuel.mod as moduleData)) {
+                    // 玩家和油桶碰撞
+                    player.moreLife(config.game.addFuel);
+                    fuels.arr[index].hurt();
+                }
+            });
+        }
+        
+        this.updateArr(fuels.arr);
     }
+    /**行星是背景，没有碰撞检测 */
     private updatePlanet() {
         this.updateArr(this.planet.arr);
     }
+    /**友军和玩家有碰撞检测 */
     private updateMeteorite() {
+        this.collisionTestForMe(this.meteorite.arr);
         this.updateArr(this.meteorite.arr);
     }
     private updatePlane() {
         this.updateArr(this.friend.arr);
-        this.updateArr(this.enermy.arr);
+        /**友军和玩家碰撞检测 */
+        const enermy = this.enermy;
+        this.collisionTestForMe(enermy.arr);
+        this.updateArr(enermy.arr);
     }
     private updateBullet() {
+        /**友军和玩家碰撞检测 */
+        this.collisionTestForMe(this.enermyBullets);
         this.updateArr(this.enermyBullets);
+        /**敌军和陨石碰撞检测 出烟花特效 */
+        this.collisionTestForArr(this.friendBullets, this.enermy.arr);
+        this.collisionTestForArr(this.friendBullets, this.enermyBullets);
+        this.collisionTestForArr(this.friendBullets, this.meteorite.arr);
         this.updateArr(this.friendBullets);
+    }
+
+    /**
+     * 
+     * @param ele1 bullet
+     * @param ele2 
+     */
+    private collisionTestForArr(ele1: Item[], ele2: Item[]) {
+        ele1.forEach((e1) => {
+            ele2.forEach((e2) => {
+                const mod1 = e1.mod as moduleData;
+                const mod2 = e2.mod as moduleData;
+                if (util.isCollision(mod1, mod2)) {
+                    let life = e2.life;
+                    if (e1.life > 0 && e2.life > 0) {
+                        e2.hurt(e1.life);
+                        e1.hurt(life);
+                        if (e2.life <= 0) {
+                            this.data.fuel +=  e2.maxLife / 2;
+                            this.data.fuel = this.data.fuel > 30 ? 30 : this.data.fuel;
+                        }
+                        explosion.clickThis(mod1.x, mod1.y);
+                    } else {
+                        this.data.updateScore(life);
+                    }
+                    return;
+                }
+            });
+        });
+    }
+
+    private collisionTestForMe(arr: Item[]) {
+        if (!this.player) {
+            return;
+        }
+        const player = this.player as Playerplane;
+        const playerMod = player.mod as moduleData;
+        for (let index = 0; index < arr.length; index++){
+            const itemMod = arr[index].mod as moduleData;
+            if (util.isCollision(playerMod, itemMod)) {
+                if (arr[index].life > 0) {
+                    player.hurt(arr[index].life);
+                    arr[index].hurt(arr[index].life);
+                    explosion.clickThis(itemMod.x, itemMod.y);
+                }
+                break;
+            }
+            this.friend.arr.forEach(element => {
+                const mod = element.mod as moduleData;
+                if (util.isCollision(mod, itemMod)) {
+                    let life = element.life;
+                    if (arr[index].life > 0 && element.life > 0) {
+                        element.hurt(arr[index].life);
+                        arr[index].hurt(life)
+                    }
+                }
+            });
+        }
     }
 
     /**

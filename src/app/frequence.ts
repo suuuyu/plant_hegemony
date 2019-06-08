@@ -1,4 +1,4 @@
-import util from './util/util';
+import {util} from './util/util';
 
 /*
  *频率计数器

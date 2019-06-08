@@ -95,6 +95,7 @@ const util = {
         this.loadResource(audios, Audio, callback);
     },
 
+    /**判断两个element是否相撞 */
     isCollision(a: moduleData, b: moduleData) {
         return ((a.y > b.y && a.y < b.y + b.h) || (b.y > a.y && b.y < a.y + a.h)) && 
         ((a.x > b.x && a.x < b.x + b.w) || (b.x > a.x && b.x < a.x + a.w));
@@ -102,8 +103,79 @@ const util = {
 
 };
 
+const hotkey = (() => {
+
+    let data: KbEvent = {};
+
+    const loop = () => {
+        for (let key of Object.keys(data)) {
+            let event = data[key];
+            if (!event || !event.active) {
+                continue;
+            }
+            if (event.enable) {
+                event.callback();
+            }
+            if (event.once) {
+                event.enable = false;
+            }
+        }
+    };
+
+    util.TimeKeeper.register('HotKey_loop', loop);
+
+    window.addEventListener('keydown', e => {
+        let keyCode = e.key.toLocaleUpperCase();
+        const event = data[keyCode];
+        if (!event) {
+            return;
+        }
+        e.preventDefault();
+        event.active = true;
+    })
+    window.addEventListener('keyup', e => {
+        let keyCode = e.key.toLocaleUpperCase();
+        const event = data[keyCode];
+        if (!event) {
+            return;
+        } else {
+            event.active = false;
+            event.once ? event.enable = true : '';
+        }
+        
+    })
+    // loop();
+    return {
+        register: (keyCode: string, callback: () => void, once: boolean = false) => {
+            keyCode = "" + keyCode;
+            keyCode = keyCode.toLocaleUpperCase();
+            data[keyCode] = {
+                callback: callback, // 触发时的回调函数
+                once: once, // 是否只回调一次
+                enable: true, // 是否可触发
+                active: false // 是否正在触发
+            }
+        },
+        clearAll: () => {
+            data = {};
+        }
+    }
+
+})();
+
 interface TkEvent {
     [key: string]: Function | undefined;
 }
 
-export default util;
+interface keyBoardEvent {
+    once: boolean;
+    callback: () => void;
+    enable: boolean;
+    active: boolean;
+}
+
+interface KbEvent {
+    [key: string]: keyBoardEvent | undefined;
+}
+
+export  { util, hotkey, TkEvent };

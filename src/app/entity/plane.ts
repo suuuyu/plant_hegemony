@@ -4,7 +4,7 @@ import { moduleData, config } from '../config';
 import { Animation} from './animation';
 import Frequence from '../frequence';
 import Bullet from './bullet';
-import util from '../util/util';
+import {util} from '../util/util';
 
 /**
  * 飞船类
@@ -55,6 +55,13 @@ export default class Plane extends Item {
         const mod = this.mod as moduleData;
         mod.y = this.isFriend ? h / 2 : util.random(0, h - mod.h);
         this.bulletFrequence = new Frequence(mod.bulletFrequence as number);
+    }
+
+    public setAttribute(x: number, y: number, life: number) {
+        const mod = this.mod as moduleData;
+        mod.x = x;
+        mod.y = y;
+        mod.life = life;
     }
 
     public update() {

@@ -29,10 +29,12 @@ interface Imodules {
 const player: moduleData = (() => {
     //玩家设置
     let o = plane();
-    o.speed = 10;
+    o.speed = 3;
     o.y = height / 2 - o.y / 2;
     o.bulletFrequence = 0.5 * fps;
-    return o;
+    return  Object.assign(o, {
+        life: 10
+    })
 })();
 
 const enemy: moduleData = (() => {
@@ -42,7 +44,7 @@ const enemy: moduleData = (() => {
     o.speed = -3;
     o.img = 'enemy';
     return  Object.assign(o, {
-        life: 2
+        life: 5
     })
 })();
 
@@ -67,7 +69,7 @@ const meteorite: moduleData = (() => {
         o,
         {
             img: batchImport('meteorites_', 4),
-            life: 3
+            life: 8
         }
     )
 })();
@@ -128,6 +130,7 @@ const config = {
             shoot: 0,
             time : 0,
             name : '',
+            maxLife: 25,
         }
     },
     game: {
@@ -135,10 +138,11 @@ const config = {
         h: height,
         fontSize : 16,
         fps: fps,
+        addFuel: 3,
         // 元素的添加频率
         appendEnemyFrequence: [2 * fps, 5 * fps],
         // appendFriendFrequence : [2 * fps, 5 * fps],
-        appendFriendFrequence : 60000,
+        appendFriendFrequence : 600000,
         appendFuelFrequence : [2 * fps, 5 * fps],
         appendPlanetFrequence : [1 * fps, 2 * fps],
         fireFrequence: 0.1 * fps
@@ -221,7 +225,7 @@ function plane() {
         y: 0,
         img : 'player',
         speed: 4,
-        bulletFrequence : 5 * fps,
+        bulletFrequence : fps,
         animation: planeAnimation(),
     }
 }

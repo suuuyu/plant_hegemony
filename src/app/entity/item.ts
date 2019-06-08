@@ -1,24 +1,26 @@
 import {Scene} from '../scene/Scene';
 import {config, moduleData} from '../config';
 import resource from '../util/resource';
-import util from '../util/util';
+import {util} from '../util/util';
 import {Animation} from './animation';
 /**
  * 飞行元素的父类，定义了一些基本的行为
  */
 export default class Item {
+    protected percent: number = 1; //速度倍率
     protected scene: Scene;
     protected run: boolean = true;
     public hasDead: boolean = false;
     public deadFunc: Function | undefined = undefined; //死亡动画
     public life: number = 1;
+    public maxLife: number = 1;
     protected rotateState: boolean = false; // 是否旋转
     protected rotateSpeed: number = 2; // 旋转速度
     private deg: number = 0; //旋转角度报错
     protected runAnimation: Animation | null = null;
     protected img: HTMLImageElement | null = null;
     public mod: moduleData | undefined = undefined;
-    private hasEntered: boolean = false;
+    protected hasEntered: boolean = false;
 
     constructor( scene: Scene) {
         this.scene = scene;
@@ -55,6 +57,7 @@ export default class Item {
 
             if(key === 'life' && mod.life !== undefined) {
                 this.life = mod.life;
+                this.maxLife = mod.life;
             }
         });
     }
@@ -66,8 +69,13 @@ export default class Item {
     /**
      * 受撞击，生命值减少，如果生命值为0就不能动弹
      */
-    public hurt() {
-        if( -- this.life <= 0) {
+    public hurt(num: number = 1) {
+        if (num === 0) {
+            num = 1;
+        }
+        this.life -= num;
+        console.log(this.life);
+        if( this.life <= 0) {
             this.run = false;
         }
     }
@@ -130,7 +138,7 @@ export default class Item {
         if(callback !== undefined) {
             callback();
         } else {
-            this.hasDead = true;
+           
         }
     }
 

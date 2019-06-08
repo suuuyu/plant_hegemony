@@ -1,6 +1,6 @@
 import {config} from '@/app/config';
 import Frequence from '../frequence';
-import util from '../util/util';
+import {util} from '../util/util';
 import Controller from '../controller';
 import resource from '../util/resource';
 
@@ -23,6 +23,7 @@ class Data {
     public controller: Controller;
     private x1: number = config.game.w;
     private x2: number = 0;
+    public hook: Function | undefined;
 
     constructor() {
         this.register_id = '';
@@ -35,7 +36,16 @@ class Data {
         this.initCanvas();
         this.start();
     }
-    private start() {
+    public setHook(hook: Function) {
+        this.hook = hook;
+    }
+    public stop() {
+        util.TimeKeeper.removeAt(this.register_id);
+    }
+    public reset() {
+        this.controller = new Controller(this);
+    }
+    public start() {
         util.TimeKeeper.register(this.register_id, this.update.bind(this));
     }
     /**
@@ -44,6 +54,7 @@ class Data {
     public update() {
         this.timeCounter.update().active(() => {
             this.controller.data.time++;
+            this.controller.data.fuel-=0.5;
         });
         this.ctx.clearRect(0, 0, config.game.w, config.game.h);
         this.scroll();
