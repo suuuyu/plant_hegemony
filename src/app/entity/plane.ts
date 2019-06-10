@@ -21,11 +21,11 @@ export default class Plane extends Item {
     protected bulletFrequence: Frequence | undefined;
 
     /** 同阵营的子弹数组 */
-    private ourBullets: Bullet[] = [];
+    protected ourBullets: Bullet[] = [];
 
     public canFire: boolean = true;
 
-    private isFriend: boolean = true;
+    public isFriend: boolean = true;
 
     public speedY: number = 0;
 
@@ -86,6 +86,10 @@ export default class Plane extends Item {
         bullet.load(this.isFriend ? 'playerBullet' : 'enemyBullet');
         bullet.setPositon(mod.x, mod.y + mod.h / 2);
         this.ourBullets.push(bullet);
+    }
+
+    public hurt(num: number = 1) {
+        super.hurt(num);
     }
 
     private move() {

@@ -178,8 +178,11 @@ export default class Controller {
             fuels.arr.forEach((fuel, index) => {
                 if (util.isCollision(mod, fuel.mod as moduleData)) {
                     // 玩家和油桶碰撞
-                    player.moreLife(config.game.addFuel);
-                    fuels.arr[index].hurt();
+                    if(fuel.life > 0) {
+                        player.getHelp(fuel as Fuel);
+                        fuels.arr[index].hurt();
+                    }
+                    
                 }
             });
         }

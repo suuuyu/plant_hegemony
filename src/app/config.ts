@@ -143,7 +143,7 @@ const config = {
         appendEnemyFrequence: [2 * fps, 5 * fps],
         // appendFriendFrequence : [2 * fps, 5 * fps],
         appendFriendFrequence : 600000,
-        appendFuelFrequence : [2 * fps, 5 * fps],
+        appendFuelFrequence : [3 * fps, 5 * fps],
         appendPlanetFrequence : [1 * fps, 2 * fps],
         fireFrequence: 0.1 * fps
     },
@@ -172,6 +172,36 @@ const config = {
         }
     },
 
+    thunderAnimation(): animationInterface {
+        return {
+            loop : true,
+            col : 20,
+            row : 1,
+            frequence : 0.1 * fps,
+            img: 'thunder'
+        }
+    },
+
+    superBulletAnimation() :animationInterface {
+        return {
+            loop : true,
+            col : 5,
+            row : 1,
+            frequence : 0.1 * fps,
+            img: 'superBullet'
+        }
+    },
+
+    weapenUpAnimation() :animationInterface {
+        return {
+            loop : false,
+            col : 9,
+            row : 1,
+            frequence : 0.1 * fps,
+            img: 'weapenUp'
+        }
+    },
+
 
     images: (() => {
         const path = '/img/';
@@ -182,7 +212,11 @@ const config = {
             enemy: path + 'plane/enemy.png',
             playerBullet: path + 'playerBullet.png',
             enemyBullet: path + 'enemyBullet.png',
+            superBullet: path + 'superBullet.png',
             fuel: path + 'fuel2.png',
+            aid: path + 'aid.png',
+            thunder: path + 'thunder3.png',
+            weapenUp: path + 'thunder2.png',
             background: path + 'background-1.jpg'
         };
         return Object.assign(

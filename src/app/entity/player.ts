@@ -3,15 +3,31 @@ import { Scene } from '../scene/Scene';
 import Bullet from './bullet';
 import Frequence from '../frequence';
 import { moduleData, config } from '../config';
-import { hotkey, TkEvent } from '../util/util';
+import { hotkey, TkEvent, util } from '../util/util';
+import { Animation } from './animation';
+import resource from '../util/resource';
+import fireStrategy from '../util/strategy';
+import Fuel from './fuel';
 
+enum WeapenLevel {
+    lv0 = 0,
+    lv1 = 1,
+    lv2 = 2,
+    lv3 = 3,
+    lv4 = 4
+}
 export default class Playerplane extends Plane {
 
     private moveFrequence: Frequence = new Frequence(1, true);
+    private  weapenLevel: WeapenLevel = 0;
+    private weapenUpdateAnimation: Animation | undefined;
+    private showThunder: boolean = false;
+    private thunderAnimation: Animation;
     private controllSpeed: number = 0;
     private canMove: boolean = true;
     constructor(scene: Scene) {
         super(scene);
+        this.thunderAnimation = new Animation(config.thunderAnimation(), scene);
     }
 
     public init(isFriend: boolean = true, bulletArray: Bullet[]) {
@@ -32,19 +48,69 @@ export default class Playerplane extends Plane {
             this.canFire = true;
         })
         if (this.run) {
-            this.fire();
+            // this.fire();
+            if (this.canFire) {
+                this.canFire = false;
+                const fn = fireStrategy[WeapenLevel[this.weapenLevel]];
+                fn(this, this.ourBullets, this.scene);
+            }
         } else {
             const scene = this.scene as Scene;
             const hook = scene.hook as Function;
             hook();
         }
         super.update();
+        const mod = this.mod as moduleData;
+        this.weapenUpdateAnimation && this.weapenUpdateAnimation.play({
+            x: mod.x - 2 * mod.w,
+            y: mod.y - 2.5 * mod.h,
+            w: 354,
+            h: 465,
+        }, () => {
+            this.weapenUpdateAnimation = undefined;
+            console.log(this.weapenLevel + '?????????????????????  ')
+            if (this.weapenLevel == 4) {
+                this.showThunder = true;
+            }
+        })
+        this.showThunder && this.thunderPlay();
+    }
+
+    public hurt(num: number = 1) {
+        super.hurt(num);
+        this.showThunder = false;
+        if (this.weapenLevel > 0) {
+            this.weapenLevel --;
+        }
+    }
+
+    public updateWeapen() {
+        this.weapenUpdateAnimation = new Animation(config.weapenUpAnimation(), this.scene);
+        this.weapenLevel ++;
+        if(this.weapenLevel > 4) {
+            this.weapenLevel = 4;
+        }
+    }
+    private thunderPlay() {
+        console.log(11111111111111);
+        const mod = this.mod as moduleData;
+        this.thunderAnimation.play({
+            x: mod.x - 2 * mod.w,
+            y: mod.y - 2.5 * mod.h,
+            w: 354,
+            h: 465,
+        })
     }
 
     /**生命增加 */
-    public moreLife(num: number) {
-        this.life += num;
-        this.life = this.life > config.data().maxLife ? config.data().maxLife : this.life
+    public getHelp(help: Fuel) {
+        if (help.type === 0) {
+            this.updateWeapen();
+        } else if (help.type === 1) {
+            this.life += config.game.addFuel;
+            this.life = this.life > config.data().maxLife ? config.data().maxLife : this.life
+        }
+        
         /** */
     }
 
@@ -82,7 +148,6 @@ export default class Playerplane extends Plane {
     }
 
     private skill1() {
-        console.log('     ')
         const mod = this.mod as moduleData;
         const life = this.life / 2;
         this.life = life;
@@ -95,7 +160,6 @@ export default class Playerplane extends Plane {
     up() {
         const mod = this.mod as moduleData;
         if (mod.y <= 0) return;
-        console.log(mod.speed)
         mod.y -= this.controllSpeed;
     }
     left() {
