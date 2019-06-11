@@ -43,6 +43,8 @@ class Data {
         util.TimeKeeper.removeAt(this.register_id);
     }
     public reset() {
+        resource.end('bgFinal');
+        resource.play('bg', true);
         this.controller = new Controller(this);
     }
     public start() {
@@ -55,6 +57,7 @@ class Data {
         this.timeCounter.update().active(() => {
             this.controller.data.time++;
             this.controller.data.fuel-=0.5;
+            this.controller.data.fuel < 0 ? this.controller.data.fuel = 0 : '';
         });
         this.ctx.clearRect(0, 0, config.game.w, config.game.h);
         this.scroll();

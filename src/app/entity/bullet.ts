@@ -9,6 +9,9 @@ export default class Bullet extends Item {
   private bulletAnimation: Animation | undefined;
   private speedX: number = 1;
   private speedY: number = 0;
+  private unrivaled: boolean = false;
+  /** 延迟子弹，在延迟时间内无敌 */
+  private lazyBullet: boolean = false;
 
   constructor(scene: Scene) {
     super(scene);
@@ -20,11 +23,39 @@ export default class Bullet extends Item {
   }
 
   public setImg(img: string) {
-    this.img = resource.findImgByKey(img);
+    const mod = this.mod as moduleData;
     if (img === 'superBullet') {
+      this.img = null;
+      mod.w = 147;
+      mod.h = 88;
       this.bulletAnimation = new Animation(config.superBulletAnimation(), this.scene);
     }
+    if (img === 'fishBullet') {
+      this.img = null;
+      mod.w = 93;
+      mod.h = 59;
+      this.bulletAnimation = new Animation(config.fishBulletAnimation(), this.scene);
+    }
+    if( img === 'sharkReady') {
+      this.img = null;
+      mod.w = 417;
+      mod.h = 142;
+      this.lazyBullet = true;
+      this.unrivaled = true;
+      this.bulletAnimation = new Animation(config.sharkReadyAnimation(), this.scene);
+    }
+    if (img === 'boss_bullet') {
+      this.img = resource.findImgByKey(img);
+      mod.w = 40;
+      mod.h = 40;
+    }
   }
+
+  public hurt(num: number = 1) {
+    if (!this.unrivaled) {
+        super.hurt(num);
+    }
+}
 
   public setDamage(num: number) {
     num > 1? this.life = num : '';
@@ -44,13 +75,28 @@ export default class Bullet extends Item {
   public update() {
     const mod = this.mod as moduleData;
     if (this.run) {
+     if(this.lazyBullet && this.unrivaled) {
+       // 延迟子弹 // 延迟期，不可移动
+       let animation = this.bulletAnimation as Animation;
+       // 播放延迟动画
+       animation.play({
+        x: mod.x,
+        y: mod.y,
+        w: 570,
+        h: 255,
+    }, () => {
+        this.unrivaled = false;
+        this.bulletAnimation = new Animation(config.sharkGoAnimation(), this.scene);
+    })
+     } else {
       this.bulletAnimation && this.bulletAnimation.play({
         x: mod.x,
-        y: mod.y - 40,
-        w: 147,
-        h: 87,
-     })
-      this.move();
+        y: mod.y,
+        w: mod.w,
+        h: mod.h,
+      })
+       this.move();
+     }
     }
     super.update();
   }

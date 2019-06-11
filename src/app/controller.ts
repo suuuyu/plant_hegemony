@@ -10,12 +10,15 @@ import { Scene } from './scene/Scene';
 import Playerplane from './entity/player';
 import explosion from '@/app/scene/explosion';
 import {util} from './util/util';
+import Boss from './entity/boss';
+import resource from './util/resource';
 
 class Data {
     public time: number;
     public fuel: number;
     public score: number;
     public level: number = 0;
+    public Boss: Boss | undefined;
     constructor() {
         this.time = 0;
         this.fuel = 0;
@@ -29,9 +32,9 @@ class Data {
 
     public updateScore(num: number) {
         this.score += num;
-        if (this.score > 10000) {this.level = 3;}
-        else if (this.score > 5000) {this.level = 2;}
-        else if (this.score > 2000) {this.level = 1;}
+        if (this.score > 5000) {this.level = 3;}
+        else if (this.score > 2000) {this.level = 2;}
+        else if (this.score > 1000) {this.level = 1;}
     }
 
     public updateFuel(num: number) {
@@ -51,6 +54,7 @@ export default class Controller {
     public friendBullets: Bullet[] = [];
     public enermyBullets: Bullet[] = [];
     private scene: Scene;
+    private isBossCome: boolean [] = [false];
     private fuels: Element = {
         arr: [],
         type: Fuel,
@@ -91,8 +95,22 @@ export default class Controller {
             this.player = new Playerplane(this.scene);
             this.player.init(true, this.friendBullets);
             this.player.bindMoveEvent(dom);
+            resource.play('bg', true);
         } else {
             console.error('用户已存在');
+        }
+    }
+
+    /** 出现第index个boss */
+    public addBoss(index: number, e: Element) {
+        if(!this.isBossCome[index]) {
+            resource.play('warning');
+            this.isBossCome[index] = true;
+            let boss = new Boss(this.scene);
+            boss.init(false, this.enermyBullets);
+            boss.load();
+            e.arr.push(boss);
+            this.data.Boss = boss;
         }
     }
 
@@ -112,6 +130,9 @@ export default class Controller {
         this.send(this.enermy, (e: any, isFriend: boolean = false) => {
             return this.getPlane(e, isFriend);
         });
+        if (this.data.level >= 3 ) {
+            this.addBoss(0, this.enermy);
+        }
         if (this.data.level >= 2 ) {
             this.send(this.enermy, (e: any, isFriend: boolean = false) => {
                 return this.getPlane(e, isFriend);
@@ -166,7 +187,7 @@ export default class Controller {
         this.updatePlane();
         this.updateBullet();
         this.player && this.player.update();
-
+        this.data.Boss && this.data.Boss.hasDead ? this.data.Boss = undefined : '';
     }
 
     /**只能碰撞玩家，碰撞后玩家加血 */
@@ -232,12 +253,13 @@ export default class Controller {
                         e2.hurt(e1.life);
                         e1.hurt(life);
                         if (e2.life <= 0) {
+                            resource.play('destroyed');
                             this.data.fuel +=  e2.maxLife / 2;
                             this.data.fuel = this.data.fuel > 30 ? 30 : this.data.fuel;
                         }
                         explosion.clickThis(mod1.x, mod1.y);
-                    } else {
-                        this.data.updateScore(life);
+                    } else if (e2.life <= 0){
+                        this.data.updateScore(mod2.life?mod2.life:1);
                     }
                     return;
                 }

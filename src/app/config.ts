@@ -48,6 +48,22 @@ const enemy: moduleData = (() => {
     })
 })();
 
+const boss: moduleData = (() => {
+    //敌人设置
+    let bossW = 300;
+    let bossH = 300;
+    return {
+        w: bossW,
+        h: bossH,
+        x: bossW + width,
+        y: height / 2 - bossH / 2,
+        img: 'boss_appear',
+        speed: 3,
+        bulletFrequence: 1 * fps,
+        life: 150
+    }
+})();
+
 const friend: moduleData = (() => {
     //友军设置
     let o = plane();
@@ -114,6 +130,7 @@ const modeles: Imodules = {
     'enemy': enemy,
     'friend': friend,
     'meteorite': meteorite,
+    'boss': boss,
     'fuel': fuel,
     'playerBullet': playerBullet,
     'enemyBullet': enemyBullet,
@@ -125,7 +142,7 @@ const config = {
     data() {
         //初始数据
         return {
-            fuel: 15,
+            fuel: 0,
             score: 0,
             shoot: 0,
             time : 0,
@@ -172,6 +189,39 @@ const config = {
         }
     },
 
+    bossDeathAnimation(): animationInterface {
+        //子弹动画
+        return {
+            img: 'explosion',
+            loop : false,
+            col: 11,
+            row: 1,
+            frequence: 0.1 * fps,
+        }
+    },
+
+    sharkGoAnimation(): animationInterface {
+        //子弹动画
+        return {
+            img: 'sharkGo',
+            loop : true,
+            col: 5,
+            row: 1,
+            frequence: 0.1 * fps,
+        }
+    },
+
+    sharkReadyAnimation(): animationInterface {
+        //子弹动画
+        return {
+            img: 'sharkReady',
+            loop : false,
+            col: 14,
+            row: 1,
+            frequence: 0.1 * fps,
+        }
+    },
+
     thunderAnimation(): animationInterface {
         return {
             loop : true,
@@ -189,6 +239,16 @@ const config = {
             row : 1,
             frequence : 0.1 * fps,
             img: 'superBullet'
+        }
+    },
+
+    fishBulletAnimation() :animationInterface {
+        return {
+            loop : true,
+            col : 6,
+            row : 1,
+            frequence : 0.1 * fps,
+            img: 'fishBullet'
         }
     },
 
@@ -217,7 +277,16 @@ const config = {
             aid: path + 'aid.png',
             thunder: path + 'thunder3.png',
             weapenUp: path + 'thunder2.png',
-            background: path + 'background-1.jpg'
+            background: path + 'background-1.jpg',
+            boss_angry: path + 'boss/boss_angry.png',
+            boss_appear: path + 'boss/boss_appear.png',
+            boss_hurt: path + 'boss/hurt.png',
+            boss_bullet: path + 'boss/boss_bullet.jpg',
+            boss: path + 'boss/boss.png',
+            sharkReady: path + 'bulletReady.png',
+            sharkGo: path + 'bulletGo.png',
+            explosion: path + 'explosion.png',
+            fishBullet: path + 'fishBullet.png'
         };
         return Object.assign(
             batchAdd(path+'/star/', 'star_', 12, 'png'),
@@ -230,7 +299,9 @@ const config = {
     audios: (()=>{
         const path = '/sound/';
         return {
-            bg : path + 'background.mp3',
+            bg : path + 'bg.mp3',
+            bgFinal : path + 'bgFinal.mp3',
+            warning: path + 'warning.mp3',
             destroyed : path + 'destroyed.mp3',
             shoot : path + 'shoot.mp3',
         }

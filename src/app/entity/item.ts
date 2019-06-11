@@ -74,7 +74,6 @@ export default class Item {
             num = 1;
         }
         this.life -= num;
-        console.log(this.life);
         if( this.life <= 0) {
             this.run = false;
         }
@@ -92,12 +91,13 @@ export default class Item {
         if (this.runAnimation){
             const mod = <moduleData>this.mod;
             return this.runAnimation.play({
-                x: <number>mod.x,
-                y: <number>mod.y,
-                w: <number>mod.w,
-                h : <number>mod.h,
+                x: mod.x,
+                y: mod.y,
+                w: mod.w,
+                h : mod.h,
             });
         }
+        if (!this.img) return;
         this.scene.draw(this.getDrawInfo());
     }
 
@@ -109,8 +109,8 @@ export default class Item {
         const mod = <moduleData> this.mod;
         return [
             this.img,
-            isRotate ? - <number> mod.w / 2 : mod.x,
-            isRotate ? - <number> mod.h / 2 : mod.y,
+            isRotate ? -  mod.w / 2 : mod.x,
+            isRotate ? -  mod.h / 2 : mod.y,
             mod.w,
             mod.h,
         ];
@@ -124,8 +124,8 @@ export default class Item {
         this.deg += this.rotateSpeed;
         this.scene.rotateDraw({
             deg: this.deg,
-            x: <number> mod.x + <number> mod.w / 2,
-            y: <number> mod.y + <number> mod.h / 2,
+            x: mod.x +  mod.w / 2,
+            y:  mod.y +  mod.h / 2,
             data: this.getDrawInfo(true),
         })
     }
@@ -162,23 +162,23 @@ export default class Item {
 
     protected isEnter() {
         const { w, h } = config.game;
-        const mod = <moduleData>this.mod;
+        const mod = this.mod as moduleData;
         return (
-            mod.x as number > 0 &&
-            mod.y  as number > 0 &&
-            mod.x as number < w &&
-            mod.y as number < h
+            mod.x> 0 &&
+            mod.y> 0 &&
+            mod.x < w &&
+            mod.y< h
         );
     }
 
     protected isOut() {
         const { w, h } = config.game;
-        const mod = <moduleData>this.mod;
+        const mod = this.mod as moduleData;
         return (
-            <number> mod.x < -<number> mod.w ||
-            <number> mod.y < -<number> mod.h ||
-            <number> mod.x > w ||
-            <number> mod.y > h
+            mod.x < mod.w ||
+            mod.y < mod.h ||
+            mod.x > w ||
+            mod.y > h
         );
     }
 }

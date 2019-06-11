@@ -26,9 +26,32 @@ const resource = (() => {
         });
     };
 
+    const play = (key: string, loop: boolean = false) => {
+        audios[key].play();
+        audios[key].loop = loop;
+    }
+
+    const pause = (key: string) => {
+        audios[key].pause();
+    }
+
+    const end = (key: string)=>{
+        audios[key].currentTime = 0;
+        audios[key].pause();  
+    };
+
+    const replay = (key: string)=>{
+        end(key);
+        play(key);
+    }
+
     return {
         findImgByKey,
         loadAssets,
+        play,
+        end,
+        pause,
+        replay
     };
 })();
 

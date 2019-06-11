@@ -20,6 +20,11 @@
             <el-progress :percentage="parseInt(controller.data.fuel / 30 * 100)" 
             style="width: 80%;float:left;"  :color="customColors"></el-progress>
           </div>
+          <div class="boss-bar" v-if="controller.data.Boss">
+            <span class="life-text"><i class="ivu-icon ivu-icon-md-code-working"></i></span>
+            <el-progress :percentage="parseInt(controller.data.Boss.life / 150 * 100)" 
+            style="width: 80%;float:left;"  :color="customColors"></el-progress>
+          </div>
           <div class="life-bar">
             <el-row :gutter="20">
               <el-col :span="6">
@@ -133,12 +138,35 @@ export default class Home extends Vue {
 </script>
 
 <style scoped>
+.ivu-icon {
+    display: inline-block;
+    font-family: Ionicons;
+    speak: none;
+    font-style: normal;
+    font-weight: 400;
+    font-variant: normal;
+    text-transform: none;
+    text-rendering: auto;
+    line-height: 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    vertical-align: middle;
+    background: url('/icon.svg');
+    width: 15px;
+}
 .fuel-bar {
   width: 15%;
   height: 20%;
   padding-top: 10px;
   padding-left: 10px;
   float: left;
+}
+.boss-bar {
+  width: 15%;
+  height: 20%;
+  padding-top: 650px;
+  padding-left: 0px;
+  float: right;
 }
 .life-bar {
   width: 15%;
@@ -164,12 +192,13 @@ export default class Home extends Vue {
   top: 0;
   left: 0;
   width: 1440px;
-  height: 200px;
+  height: 700px;
 }
 .begin-btn {
   top: 350px;
   left: 720px;
   position: absolute;
+  z-index: 10;
 }
 .control-panel {
   top: 0px;

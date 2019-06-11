@@ -68,7 +68,6 @@ export default class Playerplane extends Plane {
             h: 465,
         }, () => {
             this.weapenUpdateAnimation = undefined;
-            console.log(this.weapenLevel + '?????????????????????  ')
             if (this.weapenLevel == 4) {
                 this.showThunder = true;
             }
@@ -78,6 +77,10 @@ export default class Playerplane extends Plane {
 
     public hurt(num: number = 1) {
         super.hurt(num);
+        if (this.life <= 0) {
+            resource.end('bg');
+            resource.end('bgFinal');
+        }
         this.showThunder = false;
         if (this.weapenLevel > 0) {
             this.weapenLevel --;
@@ -148,11 +151,21 @@ export default class Playerplane extends Plane {
     }
 
     private skill1() {
-        const mod = this.mod as moduleData;
-        const life = this.life / 2;
-        this.life = life;
-        for(let i=0; i<3; i++) {
-            this.scene.controller.addFriend(mod.x, life / 2);
+        if (this.life > config.data().maxLife / 2) {
+            const mod = this.mod as moduleData;
+            const life = this.life / 2;
+            this.life = life;
+            for(let i=0; i<3; i++) {
+                this.scene.controller.addFriend(mod.x, life / 2);
+            }
+        }
+    }
+
+    private sharkFire() {
+        if (this.scene.controller.data.fuel >= 25) {
+            const fn = fireStrategy['shark'];
+            fn(this, this.ourBullets, this.scene);
+            this.scene.controller.data.fuel = 0;
         }
     }
 
@@ -193,11 +206,13 @@ export default class Playerplane extends Plane {
         });
         
         hotkey.register(' ', () => {
-            if (this.life > config.data().maxLife / 2) {
-                console.log(this.life + ' ' + config.data().maxLife / 2);
-                this.skill1();
-            }
+            this.skill1();
         }, true);
+
+        hotkey.register('g', () => {
+            this.sharkFire();
+        }, true);
+
     }
     
 }
