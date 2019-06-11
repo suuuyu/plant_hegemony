@@ -58,7 +58,6 @@ import { Component, Vue } from 'vue-property-decorator';
 import {Scene, Data} from '@/app/scene/Scene';
 import resource from '@/app/util/resource';
 import explosion from '@/app/scene/explosion';
-import User from '@/app/user';
 import { config } from '../app/config';
 import Playerplane from '../app/entity/player';
 import Controller from '../app/controller';
@@ -74,7 +73,6 @@ export default class Home extends Vue {
   private controller: Controller | undefined;
   private msg: string;
   private scene: Scene;
-  private user: User | undefined;
   private ctx: any;
   private isBegin: boolean = false;
   private visable: boolean = true;
@@ -141,7 +139,6 @@ export default class Home extends Vue {
 .ivu-icon {
     display: inline-block;
     font-family: Ionicons;
-    speak: none;
     font-style: normal;
     font-weight: 400;
     font-variant: normal;
