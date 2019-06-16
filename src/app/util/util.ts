@@ -156,7 +156,7 @@ const hotkey = (() => {
                 active: false // 是否正在触发
             }
         },
-        clearAll: () => {
+        clearAll: () => {0
             data = {};
         }
     }

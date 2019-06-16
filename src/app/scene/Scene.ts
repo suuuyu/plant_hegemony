@@ -40,6 +40,8 @@ class Data {
         this.hook = hook;
     }
     public stop() {
+        resource.pause('bgFinal');
+        resource.pause('bg');
         util.TimeKeeper.removeAt(this.register_id);
     }
     public reset() {
@@ -48,6 +50,7 @@ class Data {
         this.controller = new Controller(this);
     }
     public start() {
+        if (this.controller.player) resource.play('bg', true);
         util.TimeKeeper.register(this.register_id, this.update.bind(this));
     }
     /**

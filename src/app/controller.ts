@@ -242,7 +242,7 @@ export default class Controller {
      * @param ele1 bullet
      * @param ele2 
      */
-    private collisionTestForArr(ele1: Item[], ele2: Item[]) {
+    private collisionTestForArr(ele1: Bullet[], ele2: Item[]) {
         ele1.forEach((e1) => {
             ele2.forEach((e2) => {
                 const mod1 = e1.mod as moduleData;
@@ -254,8 +254,11 @@ export default class Controller {
                         e1.hurt(life);
                         if (e2.life <= 0) {
                             resource.play('destroyed');
-                            this.data.fuel +=  e2.maxLife / 2;
-                            this.data.fuel = this.data.fuel > 30 ? 30 : this.data.fuel;
+                            if (!e1.isShark()) {
+                                // 普通子弹才能加油
+                                this.data.fuel +=  e2.maxLife / 2;
+                                this.data.fuel = this.data.fuel > 30 ? 30 : this.data.fuel;
+                            }
                         }
                         explosion.clickThis(mod1.x, mod1.y);
                     } else if (e2.life <= 0){

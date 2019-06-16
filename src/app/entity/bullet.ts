@@ -51,6 +51,10 @@ export default class Bullet extends Item {
     }
   }
 
+  public isShark() {
+    return this.lazyBullet;
+  }
+
   public hurt(num: number = 1) {
     if (!this.unrivaled) {
         super.hurt(num);

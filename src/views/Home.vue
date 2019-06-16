@@ -5,7 +5,10 @@
       <canvas ref="screen" class="screen"></canvas>
       <div class="control-panel">
         <div class="mask" v-if="visable"></div>
-        <el-button type="primary" class="begin-btn" @click="beginGame" v-if="visable">开始</el-button>
+        <div class="begin-btn">
+          <el-row><img src="gameover.png" alt="" class="over" v-if="isOver"></el-row>
+          <el-row><el-button type="primary" @click="beginGame" v-if="visable" >{{isOver? '重新开始' : '开始'}}</el-button></el-row>
+        </div>
         <!-- <el-button type="warning" class="begin-btn" @click="stopGame" v-else>暂停</el-button> -->
         <div class="bar" v-if="controller && controller.player">
           <h1 class="head">分数：{{controller.data.score }}</h1>
@@ -70,8 +73,8 @@ import Controller from '../app/controller';
 })
 export default class Home extends Vue {
   public show: boolean = false;
+  public isOver: boolean = false;
   private controller: Controller | undefined;
-  private msg: string;
   private scene: Scene;
   private ctx: any;
   private isBegin: boolean = false;
@@ -83,7 +86,6 @@ export default class Home extends Vue {
         ]
   constructor() {
     super();
-    this.msg = 'hello';
     this.scene = new Scene();
   }
 
@@ -99,6 +101,7 @@ export default class Home extends Vue {
 
   public beginGame() {
     this.visable = false;
+    this.isOver = false;
     if (this.isBegin) {
       this.scene.start();
     } else {
@@ -111,6 +114,7 @@ export default class Home extends Vue {
   }
   public GameOver() {
     this.scene.reset();
+    this.isOver = true;
     this.isBegin = false;
     this.stopGame();
   }
@@ -136,6 +140,10 @@ export default class Home extends Vue {
 </script>
 
 <style scoped>
+.over {
+  width: 150px;
+  padding-bottom: 10px;
+}
 .ivu-icon {
     display: inline-block;
     font-family: Ionicons;
@@ -192,8 +200,8 @@ export default class Home extends Vue {
   height: 700px;
 }
 .begin-btn {
-  top: 350px;
-  left: 720px;
+  top: 300px;
+  left: 650px;
   position: absolute;
   z-index: 10;
 }
