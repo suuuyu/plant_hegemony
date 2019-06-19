@@ -19,7 +19,7 @@ enum WeapenLevel {
 export default class Playerplane extends Plane {
 
     private moveFrequence: Frequence = new Frequence(1, true);
-    private  weapenLevel: WeapenLevel = 0;
+    private  weapenLevel: WeapenLevel = 3;
     private weapenUpdateAnimation: Animation | undefined;
     private showThunder: boolean = false;
     private thunderAnimation: Animation;

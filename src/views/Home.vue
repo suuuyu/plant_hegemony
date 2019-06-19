@@ -6,7 +6,7 @@
       <div class="control-panel">
         <div class="mask" v-if="visable"></div>
         <div class="begin-btn">
-          <el-row><img src="gameover.png" alt="" class="over" v-if="isOver"></el-row>
+          <el-row><img :src="controller.player.life > 0?'win.png':'gameover.png'" alt="" class="over" v-if="isOver"></el-row>
           <el-row><el-button type="primary" @click="beginGame" v-if="visable" >{{isOver? '重新开始' : '开始'}}</el-button></el-row>
         </div>
         <!-- <el-button type="warning" class="begin-btn" @click="stopGame" v-else>暂停</el-button> -->

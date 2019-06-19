@@ -130,7 +130,7 @@ export default class Boss extends Item {
             super.hurt(num);
             if (!this.lockImg) {
                 this.lockImg = true;
-                this.img = this.Img[2].img;
+                // this.img = this.Img[2].img;
                 setTimeout(() => {
                     this.lockImg = false;
                 }, 500);
@@ -161,6 +161,7 @@ export default class Boss extends Item {
             h : 250,
         }, () => {
           this.hasDead = true;
+          this.scene.hook && this.scene.hook()
         })
       }
 }

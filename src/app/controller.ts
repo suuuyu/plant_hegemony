@@ -21,7 +21,7 @@ class Data {
     public Boss: Boss | undefined;
     constructor() {
         this.time = 0;
-        this.fuel = 0;
+        this.fuel = 20;
         this.score = 0;
     }
     public arr: boolean[] = [
@@ -54,7 +54,7 @@ export default class Controller {
     public friendBullets: Bullet[] = [];
     public enermyBullets: Bullet[] = [];
     private scene: Scene;
-    private isBossCome: boolean [] = [false];
+    public isBossCome: boolean [] = [false];
     private fuels: Element = {
         arr: [],
         type: Fuel,

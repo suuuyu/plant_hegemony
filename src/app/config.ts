@@ -50,8 +50,8 @@ const enemy: moduleData = (() => {
 
 const boss: moduleData = (() => {
     //敌人设置
-    let bossW = 300;
-    let bossH = 300;
+    let bossW = 210;
+    let bossH = 158;
     return {
         w: bossW,
         h: bossH,
