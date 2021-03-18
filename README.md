@@ -4,7 +4,7 @@
 ![snapshot](shot.png)
 >~~拾取掉落的子弹箱，依靠时有时无的补给，打败邪恶小🛸，躲避迎面而来的陨石，最终和神秘天王来一场殊死决战吧~~
 
-这是一个基于h5和 `typescript`的飞机大战小游戏，使用h5的`requestAnimationFrame`接口进行canvas渲染，是基于https://github.com/gd4Ark/star-battle改进的
+这是一个基于h5和 `typescript`的飞机大战小游戏，使用h5的`requestAnimationFrame`接口进行canvas渲染，是基于[star-battle](https://github.com/gd4Ark/star-battle)
 
 ## 代码结构说明：
 * 场景类：Scene：
